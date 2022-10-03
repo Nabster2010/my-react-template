@@ -1,18 +1,22 @@
 import { useEffect } from "react";
 import { useLocalStorage } from "./useLocalStorage";
+import { useMediaQuery } from "./useMediaQuery";
 export function useDarkMode() {
-  const [storedValue, setValue] = useLocalStorage("site-theme", "light");
+  const darkMode = useMediaQuery("(prefers-color-scheme:dark)");
+  const [storedValue, setValue] = useLocalStorage("site-theme", darkMode);
+  const darkModeEnabled =
+    typeof storedValue !== "undefined" ? storedValue : darkMode;
   useEffect(
     () => {
       const element = window.document.documentElement;
-      if (storedValue === "dark") {
+      if (darkModeEnabled) {
         element.classList.add("dark");
       } else {
         element.classList.remove("dark");
       }
     },
-    [storedValue] // Only re-call effect when value changes
+    [darkModeEnabled] // Only re-call effect when value changes
   );
   // Return enabled state and setter
-  return [storedValue, setValue];
+  return [darkModeEnabled, setValue];
 }
